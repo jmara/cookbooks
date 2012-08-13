@@ -4,11 +4,11 @@ if node['lsb']['codename'] == 'precise'
   default['postfix_dkim']['config']  = "/etc/opendkim.conf"
   default['postfix_dkim']['default'] = "/etc/default/opendkim"
   default['postfix_dkim']['genkey']  = "opendkim-genkey"
-else
-  dkim_package = "dkim-filter"
-  dkim_config  = "/etc/dkim-filter.conf"
-  dkim_default = "/etc/default/dkim-filter"
-  dkim_genkey  = "dkim-genkey"
+ else
+  default['postfix_dkim']['package'] = "dkim-filter"
+  default['postfix_dkim']['config']  = "/etc/dkim-filter.conf"
+  default['postfix_dkim']['default'] = "/etc/default/dkim-filter"
+  default['postfix_dkim']['genkey']  = "dkim-genkey"
 end
 
 default['postfix_dkim']['domain'] = node[:fqdn]
