@@ -17,37 +17,60 @@
 # limitations under the License.
 #
 
-package 'dkim-filter'
+case node.platform
+when "debian", "ubuntu"
 
-template "/etc/dkim-filter.conf" do
+if node['lsb']['codename'] = 'precise'
+then
+ package 'opendkim'
+ dkim_config  = "/etc/opendkim.conf"
+ dkim_default = "/etc/default/opendkim"
+ dkim_genkey  = "opendkim-genkey"
+else
+ package 'dkim-filter'
+ dkim_config  = "/etc/dkim-filter.conf"
+ dkim_default = "/etc/default/dkim-filter"
+ dkim_genkey  = "dkim-genkey"
+fi
+
+template "#{dkim_config}" do
   source "dkim-filter.conf.erb"
   mode 0755
 end
 
-template "/etc/default/dkim-filter" do
+template "#{dkim_default}" do
   source "dkim-filter.erb"
   mode 0755
 end
 
-directory File.dirname(node[:postfix_dkim][:keyfile]) do
+directory node[:postfix_dkim][:dir] do
   mode 0755
 end
 
 bash "generate and install key" do
-  cwd File.dirname(node[:postfix_dkim][:keyfile])
+  cwd node[:postfix_dkim][:dir]
   code <<-EOH
     if [ ! -e "#{node[:postfix_dkim][:keyfile]}" ]
     then
-      dkim-genkey #{node[:postfix_dkim][:testmode] ? '-t' : ''} -s #{node[:postfix_dkim][:selector]} -d #{node[:postfix_dkim][:domain]}
-      mv "#{node[:postfix_dkim][:selector]}.private" #{File.basename node[:postfix_dkim][:keyfile]}
+      #{dkim_genkey} #{node[:postfix_dkim][:testmode] ? '-t' : ''} -s #{node[:postfix_dkim][:selector]} -d #{node[:postfix_dkim][:domain]}
+      mv "#{node[:postfix_dkim][:selector]}.private" #{node[:postfix_dkim][:dir]}
     fi
   EOH
 end
 
-service "dkim-filter" do
-  action :start
-end
+if node['lsb']['codename'] = 'precise'
+then
+ service "opendkim" do
+   action :start
+ end
+else
+ service "dkim-filter" do
+   action :start
+ end
+fi
 
 service "postfix" do
   action :restart
+end
+
 end

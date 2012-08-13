@@ -11,11 +11,12 @@
 = ATTRIBUTES:  
   See `man 5 dkim-filter.conf` for more info on these:
     postfix_dkim[:domain] - Domain to sign (default: your FQDN)
-    postfix_dkim[:keyfile] - Full path to location of private key. If it doesn't exist, will use dkim-genkey to make one for you. (default: /etc/mail/dkim.key)
+    postfix_dkim[:dir] - Path for the *DKIM config files (default: /etc/opendkim)
+    postfix_dkim[:keyfile] - Name of the private key file. If it doesn't exist, will use dkim-genkey to make one for you. (default: dkim.key)
     postfix_dkim[:selector] - See the section on selectors http://dkim.org/info/dkim-faq.html (default: mail)
     postfix_dkim[:autorestart] - Restart on failure (default: false). Should probably flip this to true when you're sure the filter works.
 
-  For /etc/default/dkim-filter:
+  For /etc/default/dkim-filter or /etc/default/opendkim:
     postfix_dkim[:socket] - Socket to bind to. (default: 'inet:8891@localhost')
 
   For key generation using key-genkey:
