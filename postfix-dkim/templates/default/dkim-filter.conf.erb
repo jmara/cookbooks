@@ -11,7 +11,7 @@ Syslog			yes
 # Sign for example.com with key in /etc/mail/dkim.key using
 # selector '2007' (e.g. 2007._domainkey.example.com)
 Domain			<%= node[:postfix_dkim][:domain] %>
-KeyFile     <%= node[:postfix_dkim][:keyfile] %>
+KeyFile			<%= node[:postfix_dkim][:dir] %>/<%= node[:postfix_dkim][:keyfile] %>
 Selector		<%= node[:postfix_dkim][:selector] %>
 
 # Common settings. See dkim-filter.conf(5) for more information.

@@ -17,60 +17,51 @@
 # limitations under the License.
 #
 
-case node.platform
-when "debian", "ubuntu"
+#    if node['lsb']['codename']? 'precise'
+#        
+#        package 'opendkim'
+#        dkim_config  = "/etc/opendkim.conf"
+#        dkim_default = "/etc/default/opendkim"
+#        dkim_genkey  = "opendkim-genkey"
+#    else
+#        
+#        package 'dkim-filter'
+#        dkim_config  = "/etc/dkim-filter.conf"
+#        dkim_default = "/etc/default/dkim-filter"
+#        dkim_genkey  = "dkim-genkey"
+#    end
 
-if node['lsb']['codename'] = 'precise'
-then
- package 'opendkim'
- dkim_config  = "/etc/opendkim.conf"
- dkim_default = "/etc/default/opendkim"
- dkim_genkey  = "opendkim-genkey"
-else
- package 'dkim-filter'
- dkim_config  = "/etc/dkim-filter.conf"
- dkim_default = "/etc/default/dkim-filter"
- dkim_genkey  = "dkim-genkey"
-fi
+package node[:postfix_dkim][:package]
 
-template "#{dkim_config}" do
-  source "dkim-filter.conf.erb"
-  mode 0755
-end
+ template node[:postfix_dkim][:config] do
+   source "dkim-filter.conf.erb"
+   mode 0755
+ end
 
-template "#{dkim_default}" do
-  source "dkim-filter.erb"
-  mode 0755
-end
+ template node[:postfix_dkim][:default] do
+   source "dkim-filter.erb"
+   mode 0755
+ end
 
-directory node[:postfix_dkim][:dir] do
-  mode 0755
-end
+ directory node[:postfix_dkim][:dir] do
+   mode 0755
+ end
 
-bash "generate and install key" do
+ bash "generate and install key" do
   cwd node[:postfix_dkim][:dir]
   code <<-EOH
     if [ ! -e "#{node[:postfix_dkim][:keyfile]}" ]
     then
-      #{dkim_genkey} #{node[:postfix_dkim][:testmode] ? '-t' : ''} -s #{node[:postfix_dkim][:selector]} -d #{node[:postfix_dkim][:domain]}
-      mv "#{node[:postfix_dkim][:selector]}.private" #{node[:postfix_dkim][:dir]}
+      #{node[:postfix_dkim][:genkey]} #{node[:postfix_dkim][:testmode] ? '-t' : ''} -s #{node[:postfix_dkim][:selector]} -d #{node[:postfix_dkim][:domain]}
+      mv "#{node[:postfix_dkim][:selector]}.private" #{node[:postfix_dkim][:keyfile]}
     fi
   EOH
-end
+ end
 
-if node['lsb']['codename'] = 'precise'
-then
- service "opendkim" do
+service node[:postfix_dkim][:package] do
    action :start
- end
-else
- service "dkim-filter" do
-   action :start
- end
-fi
+end
 
 service "postfix" do
   action :restart
-end
-
 end
