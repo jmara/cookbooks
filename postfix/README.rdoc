@@ -1,0 +1,12 @@
+= DESCRIPTION:
+  Installs postfix and enables dkim-filter/opendkim if needed: https://help.ubuntu.com/community/Postfix/DKIM
+  
+= REQUIREMENTS:
+  Postfix
+
+= ATTRIBUTES:  
+    postfix[:dkim_socket] - Socket to bind to. (default: 'inet:localhost:8891')
+    postfix[:enable_dkim] - Enable DKIM (default: false)
+  
+= USAGE:
+  Set the attributes (defaults should work for most on Ubuntu), and it installs the postfix filter and writes config files.
