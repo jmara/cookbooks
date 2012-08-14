@@ -4,6 +4,8 @@
 #
 # Copyright 2011, Room 118 Solutions, Inc.
 #
+# Modification Copyright 2012, Krankikom GmbH
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -16,20 +18,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-#    if node['lsb']['codename']? 'precise'
-#        
-#        package 'opendkim'
-#        dkim_config  = "/etc/opendkim.conf"
-#        dkim_default = "/etc/default/opendkim"
-#        dkim_genkey  = "opendkim-genkey"
-#    else
-#        
-#        package 'dkim-filter'
-#        dkim_config  = "/etc/dkim-filter.conf"
-#        dkim_default = "/etc/default/dkim-filter"
-#        dkim_genkey  = "dkim-genkey"
-#    end
 
 package node[:postfix_dkim][:package]
 
